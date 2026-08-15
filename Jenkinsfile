@@ -4,13 +4,50 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                bat 'mvn clean compile'
+                script {
+                    if (isUnix()) {
+                        sh 'mvn clean compile'
+                    } else {
+                        bat 'mvn clean compile'
+                    }
+                }
             }
         }
         stage('Test') {
             steps {
-                bat 'mvn test'
+                script {
+                    if (isUnix()) {
+                        sh 'mvn test'
+                    } else {
+                        bat 'mvn test'
+                    }
+                }
+            }
+        }
+        stage('Package') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        sh 'mvn package'
+                    } else {
+                        bat 'mvn package'
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        // Run the JAR on Linux/macOS
+                        sh 'java -jar target/HelloJenkins-1.0-SNAPSHOT.jar'
+                    } else {
+                        // Run the JAR on Windows
+                        bat 'java -jar target\\HelloJenkins-1.0-SNAPSHOT.jar'
+                    }
+                }
             }
         }
     }
 }
+
